@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Orc Mob</title>
+<link rel="shortcut icon" type="image/x-icon" href="images/M.ico">
+<script type="text/javascript" src="Resources/orcmob.js"></script>
+<script type="text/javascript" src="Resources/army.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><!--jquery-->
+<style type="text/css">
+    /*remember css precedence*/
+    #one{}   /* #id      -1st precedence*/
+    .hidden{}/* .class   -2nd precedence*/
+    div{}    /*  tag     -3rd precedence*/
+    
+    /*Begin: Drop down "Add Heroes..." Menu*/
+    .topNav{
+        border-radius : 8px;/*border-bottom-right-radius : 10px*/
+            background: #444;/**/
+            max-width: 200px;/*default nav stretches the whole width*/
+    }
+    .topNav a{
+            color:white;/*white text, don't understand why i cant put this in lower lvl tag*/
+            padding: 4px 5px 4px 8px;
+    }
+    a:hover{
+            /*text-decoration:underline;/*underline only when mouse over*/
+    }
+    a{
+            text-decoration:none;/*removes underline*/
+    }
+    nav li{
+            list-style:none;/*removes list *'s */
+            color:white;
+    }
+    .navTier1{
+        padding: 0 0 0 6px;
+        height:1.4em;
+    }
+    .navTier1 li{
+           /* float:left;/*makes list go out to Right */
+    }
+    .navTier2{
+            position: absolute;/*allows drop down to overlap; not push other stuff out of way*/
+            display:none;/*hides it until hover over.*/
+            background:#444;
+            padding:0;/*5 20;/**/
+            opacity: 1;/**/
+    }
+    .navTier2 li{
+        padding:10px 2px 10px 5px;
+        float:none;/**/
+    }
+    .navTier1 li:hover .navTier2{
+            display:block;
+            margin: 0 0 0 0;
+    }
+    .navTier2 li:hover {
+            display:block;
+            text-decoration:underline;
+            background:#006;
+    }
+    .m1{
+        width: 65px;/**/
+        display: inline-block;/* removes underline why?*/
+        /*float:left;/* removes underline why?*/
+    }
+    .m2{
+        width: 40px;/**/
+        display: inline-block;
+    }
+    .m3{
+        width: 85px;/**/
+        display: inline-block;/**/
+    }
+    .menuItem :hover{
+        text-decoration:underline;/**/
+        background:#FFF;
+    }
+    .gray{
+        opacity: .4;/**/
+    }
+    /*End: Drop down "Add Heroes..." Menu*/
+    
+    
+    /*Begin: Add Font*/
+    @font-face {
+        font-family: 'Schoensperger';
+        src: url('images/Schoensperger.otf');
+    }
+    @font-face {
+        font-family: 'Zapfino';
+        src: url('images/Zapfino.ttf');
+    }
+    #mord{
+        padding: 2px 5px 0px 5px;
+        /*vertical-align: middle;*/
+        font-family: 'Schoensperger';
+    }
+    #name1{
+        font-family: 'Zapfino';/**/
+        font-size: 90%;
+        width: 97%;
+        border: 0px;
+        height: 51px;
+        border: 1px solid ;
+        /*border-color: red;/**/
+    }
+    /*End: Add Font*/
+    /*Begin: Table sizing*/
+    .wepsel {
+        width: 100%;
+        height: 26px;
+    }
+    .wepcolumn{
+        /*max-width: 170px;/**/
+    }
+    .quantcolumn{
+        min-width: 88px;/*probably a better way to deal with + button dropping down*/
+    }
+    .plusMinus{
+        /*appearance: none;/**/
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        border-radius:5px;
+        padding: 0 0 0 0;
+        width: 24px;/**/
+        height: 20px;
+    }
+    /*Button input */
+    input{
+        background-color: #FFF;
+        margin: 0 1px 0 2px;
+        text-align: center;
+    }
+    table{
+        margin: 4px 0;
+    }
+    /*End: Table sizing*/
+    
+    /*Begin: Background image*/
+    body{
+        background-image: url('images/orcs9.jpg');
+        background-repeat: no-repeat;/*otherwise image repeat*/
+        background-position: center;/**/
+        background-attachment: fixed;/**/
+        /*background-size: 100%;/**/
+        background-size: cover;
+        /*opacity: 0.4;filter:alpha(opacity=40);/**/
+        /*margin: 0px 10px 1%;/**/margin: 0px;
+        min-width:500px;/**/
+    }
+    /*div.transbox {
+        width: 500px;
+        height: auto;
+        /*padding-top: 70px;*
+        margin: 50px auto;/*centers*
+        padding: 15px 15px;
+        background-color: #ffffff;
+        /*border: 1px solid black;*
+        opacity: 0.85;
+        filter: alpha(opacity=85); /* For IE8 and earlier *
+    }*/
+    /*End: Background image*/
+    /*Begin: Banner*/
+    /*div#banner { 
+       position: absolute; 
+       top: 0; 
+       left: 0; 
+       background-color: #DDEEEE; 
+       width: 100%; 
+     }
+    div#banner-content { 
+       width: 800px; 
+       margin: 0 auto; 
+       padding: 10px; 
+       border: 1px solid #000;
+    }*/
+    /*End: Banner*/
+    /*Begin: 3 Columns */
+    #container3 {
+        /* #Right Column Background + top level container*/
+        width:100%;
+        /*background:green;/**/
+        overflow: hidden;
+        /*position:relative;/**/
+        /*float:right;/**/
+        border: 1px solid black;/*add thin border*/
+        display: table;/*combined with below causes centering*/
+        margin: auto;/*combined with above causes centering*/
+        min-width:500px;/*no smaller than this small*/
+        max-width:850px;/*no more than this big*/
+        background-color: rgba(255, 255, 255, 0.5);/*opacity: 0.85;filter: alpha(opacity=85); /* For IE8 and earlier */
+    }
+    #container2 {
+        /* #Middle Column Background*/
+        float:left;
+        width:100%;
+        /*background-color: rgba(255, 255, 255, .5);/*background:yellow;/**/
+        position:relative;
+        right:30%;/* <-- Left 30% */
+    }
+    #container1 {
+        /* #Left Column Background */
+        float:left;
+        width:100%;
+        /*background-color: white;
+        /*background-color: rgba(255, 255, 255, .5);/*background:red;/**/
+        position:relative;
+        right:40%;/* <-- Left 30%+40% = 70% */
+    }
+    #col1 {
+        /* #Right Column Content */
+        float:left;
+        width:29%;
+        position:relative;
+        left:70.5%;/* move back Right 70% --> */
+        overflow:hidden;
+        /*background:red;/**/
+        
+    }
+    #col2 {
+        /* #Middle Column Content */
+        float:left;
+        width:39%;
+        position:relative;
+        left:71.5%;/* move back Right 70% --> */
+        overflow:hidden;
+        /*background:yellow;/**/
+    }
+    #col3 {
+        /* #Left Column Content */
+        float:left;
+        width:29%;
+        position:relative;
+        left:72.5%;/* move back Right 70% --> */
+        overflow:hidden;
+        padding: 5px;
+        /*background:green;/**/
+    }
+    /*End: 3 Columns */
+    
+    /*Begin: left hand requirements/recommendations*/
+    .bold{
+        font-weight: bold;
+        text-align: center;
+        width:100%;
+    }
+    .ruleset{
+        list-style-type:none;
+        margin:0;
+	padding:0;
+        background-color: white;
+        /*width: 90%;/**/
+        width: auto;/**/
+        border-radius:5px;
+        border: 1px solid;
+    }
+    .valid {
+	background:url(images/validcheck.png);
+        background-repeat: no-repeat;
+        background-position: 4px;
+	padding-left:25px;
+	line-height:24px;/**/
+	color:#3a7d34;
+    }
+    .invalid {
+	background:url(images/invalidcheck.png);
+        background-repeat: no-repeat;
+        background-position: 4px;
+	padding-left:25px;
+        line-height:24px;/**/
+	color:#ec3f41;
+    }
+    .yellow {
+        background:url(images/yellow.gif);
+        background-repeat: no-repeat;
+        background-position: 4px;
+        padding-left:25px;
+        line-height:24px;/**/
+	color:#FDDD00;
+    }
+    /*End: left hand requirements/recommendations*/
+    /*Start: requirements Dropdown*/
+        .dropt {
+           /* border-bottom: thin dotted;
+            background: #ffeedd;/**/
+            display:inline;
+        }
+        .dropt:hover {
+            border-bottom: thin dotted;
+            /*text-decoration: none;/**/
+            /*background: #ffffff;/**/
+           /* z-index: 6;/**/
+        }
+        .dropt:hover .info {
+            left: 0px;           /*This SHOWS the Drop Down*/
+            visibility: visible;/*This SHOWS the Drop Down*/
+            background: #C8EECB;/*Otherwise transparent background*/
+            margin: 4px 0px 0px 0px;/*Moves Popup Down*/
+        } 
+        .info{
+            position: absolute;/*fixed;absolute /*Fixed so it can show in front of floating columns?*/
+            visibility: hidden; /*This HIDES the Drop Down*/
+            /*left: -9999px;    /*This HIDES the Drop Down*/
+            border-style: solid;
+            border-color:black;
+            border-width:1px;
+            padding: 0px 3px 0px 3px;/**/
+            color: black;
+            /*width: 400px;/**/
+        }
+        hr{
+            margin: 0px;
+        }
+        /*End: requirements Dropdown*/
+        /*Start: Table; */
+    table { 
+        background-image:url(images/wood_pattern.png);
+        border:1px solid gray;
+        border-collapse:collapse;
+    }
+    tbody tr:hover { 
+        background-image:url(images/woodhigh.jpeg);
+    }
+        /*End: Table; */
+        /*Start: Banner; */
+    #banner{
+        margin: auto;
+        padding: 0px 0px;/**/1
+        background: -webkit-linear-gradient( black ,#00B886, black); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient( black ,#00B886, black); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient( black , #00B886, black); /* For Firefox 3.6 to 15 */
+        background: linear-gradient( black , #00B886, black); /* Standard syntax (must be last) */
+        min-width:500px;
+        max-width:850px;
+    }
+    #bannerImage {
+        content: url('images/banner6.png');
+        margin: auto;/*center*/
+        height: 70px;
+        width: 90%;
+        max-width: 450px;
+    }
+        /*End: Banner; */
+</style>
+</head>
+<body>
+<!-- #HTML -->
+        
+        
+<!--div id="banner">
+    <div id="banner-content">
+       This is your banner text, centered 
+        and fixed at 800px in width
+    </div>
+</div-->
+
+<div id="banner"><div id="bannerImage"></div></div>
+<div id="container3">
+    <div id="container2">
+        <div id="container1">
+            <div id="col1">
+                
+                
+                <nav class="topNav">
+                    <ul class="navTier1">
+                        <li>
+                            <a> Buy Heroes & Henchman</a> <img alt="dropdownarrow" src="images/arrow-down.gif">
+                            <ul class="navTier2" id="navTier2">
+                                <li id="Orc" ><span class="m1">Orc</span><span class="m2">$25</span><span class="m3">433341217</span></li>
+                                <li id="Boss" ><span class="m1">Boss</span><span class="m2">$80</span><span class="m3">4<u>444</u>41<u>3</u>1<u>8</u></span></li>
+                                <li id="Shaman" ><span class="m1">Shaman</span><span class="m2">$40</span><span class="m3">433341<u>3</u>17</span></li>
+                                <li id="BigUn" ><span class="m1">Big'Un</span><span class="m2">$40</span><span class="m3">4<u>4</u>3341<u>3</u>17</span></li>
+                                <li id="Goblin" ><span class="m1">Goblin</span><span class="m2">$15</span><span class="m3">423331<u>3</u>15</span></li>
+                                <li id="Squig" ><span class="m1">Squig</span><span class="m2">$15</span><span class="m3">S<u>4</u>0<u>4</u>31<u>4</u>15</span></li>
+                                <li id="Troll" ><span class="m1">Troll</span><span class="m2">$200</span><span class="m3"><u>6</u>31<u>5</u>4<u>3</u>1<u>3</u>4</span></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                
+                
+                <div class="bold">Orc Warband Requirements:</div>
+                <ul class="ruleset">
+                    <li id="req1" class="invalid"><div class="dropt">Must Have a Leader (Boss)<div class="info"><div class="bold">Orc Leaders</div><hr />
+                    Orc Warbands Must start out with an <u>Orc Boss</u>
+                    as their <u>Leader</u>. If the Orc Boss ever dies, the Hero with the highest Leadership becomes Leader. Any warrior who is within 6" of their
+                    Leader can use the Leader's Leadership Characteristic instead of their own. Such as when testing for: Troll Stupidity, All Alone Tests,
+                    or Fear Tests.</div></div></li>
+                    <li id="req2" class="invalid"><div class="dropt">Warband size: 3 to 20<div class="info"><div class="bold">Orc Warband Size</div><hr />
+                    Orc Warbands can have a minimum of 3 members, and a
+                    maximum of 20! This maximum can be increased to 21 with the purchase of a <u>Hafling Cookbook</u>. In additon Hired Swords, such as the
+                    <u>Warlock</u>, <u>Pitfighter</u>, and <u>Ogre Bodyguard</u>, can be added to your warband and do not count toward this maximum.</div></div></li>
+                    <li id="req3" class="valid"><div class="dropt">Max Cost: $500 Gold<div class="info"><div class="bold">Gold Earnings</div><hr />
+                    You have $500 Gold to start with, and you'll earn around
+                    $55 after each battle from selling Wyrdstones. Having 6 Heroes will allow you to roll 6 dice when searching
+                    for Wyrdstone, Plus one extra dice if you defeated the enemy warband. Item's such as <u>Rabbit's Foot</u> and <u>Mordheim Map</u>
+                    allow you to re-roll a dice!</div></div></li>
+                    <li id="req4" class="valid"><div class="dropt">Min of 1 Orcish per 2 Goblin<div class="info"><div class="bold">Orc's Before Goblins</div><hr />
+                    For every two Goblins in your warband, you'll
+                    need to have at least one Orcish member. All the Orc Heroes: Boss, Shaman, and Big'Un's, count as Orcish, along with the Orc Henchman.
+                    Currently your warband has &nbsp;<u><span id="OrcCount">0</span></u> Orcish, and &nbsp;<u><span id="GobCount">0</span></u> Goblins.</div></div></li>
+                    <li id="req5" class="valid"><div class="dropt">Min of 1 Goblin per Squig<div class="info"><div class="bold">Squig Herding</div><hr />
+                    For each Squig in your your warband
+                    you'll need to have at least one goblin. In addition a goblin has to be within 6" of a Squig at all times or it will go wild!</div></div></li>
+                </ul>
+                <br />
+                <div class="bold">Highly Recomended:</div>
+                <ul class="ruleset">
+                    <li id="req6" class="invalid"><div class="dropt">At Least Three Heroes<div class="info"><div class="bold">Orc Heroes!</div><hr/>
+                    Orc's can start out with 4 Heroes: a Boss, a Shaman, & 2 Big'Un's! Heroes can learn <u>Skills</u>, help increase income, prevent your
+                    Orcs & Goblins from fighting each other due to <u>Animosity</u>, and can purchase and use miscellaneous item's! 
+                    </div></div></li>
+                    <li id="req7" class="invalid"><div class="dropt">Maximize Orc Promotions<div class="info"><div class="bold">Heroes From Promotions!</div><hr/>
+                    Warband's can have 6 Heroes max! As experience is earned each group of Orcs(table row) gets an <u>Advance Roll</u> (which has 
+                    a 1 in 6 chance of making 1 of them a Hero) So recruit 6+ Orcs, each in their own group! 
+                    </div></div></li>
+                    <li id="req8" class="valid"><div class="dropt">Everyone Dual Wielding<div class="info"><div class="bold">Dual Wielding!</div><hr/>
+                    Having a weapon in each hand is <u>Dual Wielding</u>, such as two daggers! Your 1st dagger is free, so just equip your warriors with a 2nd weapon,
+                    and now they have 2 attacks!
+                    </div></div></li>
+                    <li id="req9" class="valid"><div class="dropt">Minimize Goblin Promotions<div class="info"><div class="bold">Death From Promotions!</div><hr/>
+                    Unlike Orcs, Goblin promotions are bad! When a group of Goblins(table row) Advances, there is a chance 1 is killed! So group up your Goblins!
+                    </div></div></li>
+                    <li id="reqA" class="valid"><div class="dropt">Cheap Weapons! No Armor<div class="info"><div class="bold">Travel Light!</div><hr/>
+                    Starting recruites are more valuable then armour and weapons! Spend less than $75 total on weapons!
+                    </div></div></li>
+                </ul>
+                <br />
+                <div class="bold">Warband name:</div><input id="name1"  maxlength="20" type="text"> <br /><!--class="gray" disabled="true"-->
+                <br />
+                
+            </div><!--col1-->
+            <div id="col2">
+                
+                
+                <table id="units" border="1">
+                    <tr>
+                        <th>Type</th>
+                        <th class="quantcolumn">Quantity</th>
+                        <th class="wepcolumn">Weapon(s)</th>
+                    </tr>
+                </table>
+                
+                
+            </div><!--col2-->
+            <div id="col3">
+                
+                
+                $<span id="gold">500</span> - Gold left<br />
+                <span id="rating">0</span> - Warband Rating<br />
+                <span id="bandsize">0</span> - Warband Size<br />
+                <span id="rout">0</span> - For Rout Test<br />
+                <!--Number of units that need to taken out of action (25%) before a rout test. (fallen Goblin and Squig only count as .5)-->
+                <span id="stones">0</span> - Wyrdstones<br />
+                <button id="dagg" onclick="daggers()" disabled="disabled">All Dual Wield</button>
+                
+                
+            </div><!--col3-->
+        </div>
+    </div>
+</div>
+<br /><br /><br /><br /><br /><br /><br /><br /><br />
+<div class="bold">
+    <p>
+        <a class="bold" href="http://validator.w3.org/check?uri=referer">
+            <img src="images/w3chtml5.png" alt="Valide HTML5 - W3C" title="Valide HTML5 - W3C" height="35" width="100">
+        </a>
+    </p>
+    <p>
+        <a href="http://jigsaw.w3.org/css-validator/check/referer">
+            <img style="border:0;width:88px;height:31px"
+            src="images/vcss-blue.gif"
+            alt="Valid CSS!" />
+        </a>
+    </p>
+</div>
+
+<script type="text/javascript">
+// #JavaScript
+
+    // #Globals
+    var mut = document.getElementById("units");//table
+    var cost = document.getElementById("gold");
+    var num = 0; //used to create unique id for each row
+    var warbandsize = document.getElementById("bandsize");
+    var rating = document.getElementById("rating");
+    var rout = document.getElementById("rout");
+    var navi = document.getElementById("navTier2");
+    var dagg = document.getElementById("dagg");
+    /////////
+    //testing out saving variables in sessionStorage
+    // Get the text field that we're going to track
+    var field = document.getElementById("name1");
+    // See if we have an autosave value
+    // (this will only happen if the page is accidentally refreshed)
+    if (sessionStorage.getItem("autosave")) {
+       // Restore the contents of the text field
+       field.value = sessionStorage.getItem("autosave");
+    }
+    // Listen for changes in the text field
+    field.addEventListener("change", function() {
+       // And save the results into the session storage object
+       sessionStorage.setItem("autosave", field.value);
+    });
+    /////////
+    
+    var req1 = document.getElementById("req1");
+    var req2 = document.getElementById("req2");
+    var req3 = document.getElementById("req3");
+    var req4 = document.getElementById("req4");
+    var req5 = document.getElementById("req5");
+    var req6 = document.getElementById("req6");
+    var req7 = document.getElementById("req7");
+    var req8 = document.getElementById("req8");
+    var req9 = document.getElementById("req9");
+    var reqA = document.getElementById("reqA");
+    var orcCount = document.getElementById("OrcCount");
+    var gobCount = document.getElementById("GobCount");
+    
+    
+    //updateRequirements();
+    function updateRequirements(){
+        if (army.curIndex == -1) {//nothing in army. Put this here to prevent accessing army.group[0].type when there is no army.group[0]
+            req1.className = req2.className = req6.className = req7.className = "invalid";
+            req3.className = req4.className = req5.className = req8.className = req9.className = reqA.className = "valid";
+        }else{
+            req1.className = (army.group[0].type =="Boss" && army.group[0].quantity == 1) ? "valid" : "invalid";
+            if ( army.size >= 3 && army.size <= 20) {
+                req2.className = (army.size >5 && army.size <=19) ? "valid" : "yellow";
+            }else{
+                req2.className = "invalid";
+            }
+            if (army.gold >= 0) {
+                req3.className = (army.gold > 24) ? "valid" : "yellow";
+            }else{
+                req3.className = "invalid";
+            }
+            req4.className = army.gotEnoughOrcish();
+            req5.className = army.gotEnoughGoblin();
+            req6.className = army.gotThreeHeroes();
+            req7.className = army.gotPromotions();
+            req8.className = army.gotDualWield();
+            req9.className = army.gotGroupedGoblins();
+            reqA.className = army.gotCheapGear();
+            gobCount.innerHTML = army.howManyOf("Goblin", true);
+            orcCount.innerHTML = army.howManyOf("Orcish", true);
+            /*if (req1.className!="invalid"&&req2.className!="invalid" && req3.className!="invalid" && req4.className!="invalid" &&req5.className!="invalid") {
+                $("#name1").prop("disabled",false);
+                $("#name1").css('border-color', 'black');
+                $("#name1").attr('class', '');
+            }else{
+                $("#name1").prop( "disabled", true );
+                $("#name1").css('border-color', 'red');
+                $("#name1").attr('class', 'gray');
+            }*/
+            if ( req8.className != "valid") {
+                dagg.disabled =false;
+                //dagg.setAttribute("disabled", "false");
+            }else{
+                dagg.disabled=true;
+                //dagg.setAttribute("disabled", "true");
+            }
+        }
+    }
+    
+    
+    //redistrubuteIds();
+    //called everytime new row is added or deleted
+    //Helps Keep Row Event Listeners Up-to-date with which index in army.group[#] is their's
+    function redistributeIds(){
+        var tbody = mut.children[0];
+        var tableRows = tbody.children;
+        for(var i=1; i<tableRows.length; i++)//start 1, 0 is header row
+        {
+            tableRows[i].id = i-1;
+        }
+    }
+    
+    function daggers(){
+        army.daggersPlease();
+        cost.innerHTML = army.gold;
+        var weaponselect = document.getElementsByClassName("wepsel");
+        for(var i=0; i<weaponselect.length;i++)
+        {
+            if (weaponselect[i].selectedIndex == 0 ) {
+                weaponselect[i].selectedIndex = 1;//switches squig and Troll from [0] to [1] so put a cell 1 in as a clugy fix
+            }
+        }
+        updateRequirements();
+    }
+    //createRow():
+    //This is the Key function that creates and populates a row in the table and adds buttons/select with event listeners and stores all the data in 'army'
+    function createRow(type, ddIndex){
+        
+        //store the new type(henchman group/Hero) in 'army.group' 
+        var gIndex = army.addGroup(type);//returns army.group[#] index where the 'type' was added / is located
+        var c = army.group[gIndex];//pointer to army.group[#], where the 'type' was added / is located
+        
+        //create elements that go in the new row
+        var incButton = document.createElement('input');// == '+' button
+        var decButton = document.createElement('input');// == '-' button
+        var quantity = document.createElement('input');// == [1] field that '-' and '+' modify
+        var weapons = document.createElement('select');// == dropdown to select weapon with cost
+        //Populate elements with values
+        incButton.type = decButton.type = "button";
+        incButton.value = "+";
+        decButton.value = "-";
+        incButton.className = "plusMinus";
+        decButton.className = "plusMinus";
+        quantity.size=1;//width, should do this with css?
+        quantity.value = 1;
+        quantity.readOnly="true";//non-editable
+        //Populate weapons 'Select'er based on c's wtype
+        var weaponNameList = army.warband.weaponlist.name[ c.info.wtype ];
+        for (var i=0; i<weaponNameList.length; i++) {
+            var newOp = document.createElement('option');
+            newOp.innerHTML = weaponNameList[i];
+            newOp.value = i;
+            weapons.appendChild(newOp);
+        }
+        if (weaponNameList.length <= 2) {
+            weapons.disabled=true;//Squig or Troll only have one weapon: "Can't use weapons - 0g";
+        }
+        weapons.className = "wepsel";
+        
+        //Create table row & table data nodes and appendChildren  
+        var newRow = document.createElement('tr');
+        newRow.id = gIndex;//newRow.id - will get updated if row(s) above it are added/deleted in the redistributeIds() function
+        newRow.col1 = document.createElement('td');
+        newRow.col2 = document.createElement('td');
+        newRow.col3 = document.createElement('td');
+        newRow.col3.className = "wepcolumn";//set width
+        newRow.col2.className = "quantcolumn";//set width
+        newRow.col1.id = "mord";//text styling
+        newRow.appendChild(newRow.col1);
+        newRow.appendChild(newRow.col2);
+        newRow.appendChild(newRow.col3);
+        //create Weapons, column #3
+        newRow.col3.appendChild(weapons);
+        //create Quantity, column #2
+        newRow.col2.appendChild(decButton);
+        newRow.col2.appendChild(quantity);
+        newRow.col2.appendChild(incButton);
+        //create Name, column #1
+        newRow.col1.innerHTML = c.info.name; //c.info.name correctly == "Big'Un" not "BigUn"
+        
+        //Event Listeners
+        
+        //add weapons Event Listeners
+        weapons.onchange = function(){
+            gIndex = newRow.id;
+            var weaponIndex = this.value;
+            //#Update Army
+            army.changeWeapon( gIndex, weaponIndex);
+            //#Update Display
+            updateRequirements();
+            cost.innerHTML = army.gold;
+        }
+        //[+] [-] button Event Listeners
+        incButton.addEventListener("click",function(){
+            gIndex = newRow.id;
+            //add 1 to group and check if it is at max, if it is gray out
+            if( army.incrementGroup(gIndex) ){ //<- #Update Army
+                incButton.disabled =  "disabled";
+                incButton.className = "plusMinus gray";
+            }
+            //#Update Display
+            updateRequirements();
+            decButton.value = "-";
+            decButton.setAttribute("style", "color: black;");
+            quantity.value = c.quantity;
+            cost.innerHTML = army.gold
+            rating.innerHTML = army.rating;
+            warbandsize.innerHTML = army.size;
+            rout.innerHTML = Math.ceil(army.size*.50)/2;
+        });
+        decButton.addEventListener("click",function(){
+            gIndex = newRow.id;
+            //remove this row if quantity is zero
+            if (quantity.value == 0) {
+                army.removeGroup(gIndex);           //<- #Update Army -- deletes all data associated with this row
+                mut.children[0].removeChild(newRow);//deletes this whole row 
+                redistributeIds();                  //after deleting row : updates other row id's to corrolate to army.group[#] index #'s
+                navi.children[ddIndex].setAttribute("class", "");//ungray out option to choose this model in dropdown
+                //#Update Display
+                updateRequirements();
+                rout.innerHTML = Math.ceil(army.size*.50)/2;
+                
+            }else{
+                //remove 1 from group and check if at 0 now, if so turn '-' to 'x' sign
+                if( army.decrementGroup(gIndex) ){ //<- #Update Army
+                    decButton.value = "x";
+                    decButton.setAttribute("style", "color: #8B0000;");
+                }
+                //#Update Display
+                updateRequirements();
+                incButton.className = "plusMinus";
+                incButton.disabled = false;//un-gray out '+' button
+                quantity.value = c.quantity;
+                cost.innerHTML = army.gold
+                rating.innerHTML = army.rating;
+                warbandsize.innerHTML = army.size;
+                rout.innerHTML = Math.ceil(army.size*.50)/2;
+            }
+        });
+        
+        //#Update Display
+        updateRequirements();
+        cost.innerHTML = army.gold;
+        rating.innerHTML = army.rating;
+        warbandsize.innerHTML = army.size;
+        rout.innerHTML = Math.ceil(army.size*.50)/2;
+        //If at max # of groups of this type, gray it in dropdown
+        if(c.info.maxGroups == army.howManyOf(type,false) ){
+            navi.children[ddIndex].setAttribute("class", "gray");
+        }
+        //if 1 is the max # per group
+        if( c.info.max == 1 ){ 
+                incButton.disabled =  "disabled";
+                incButton.className = "plusMinus gray";
+        }
+        
+        mut.children[0].insertBefore(newRow, mut.rows[gIndex+1]);//mut.children[0] == <tbody>
+        redistributeIds();              //after adding row : updates other row id's to corrolate to army.group[#] index #'s
+    }
+    
+    //<!-- drop down menu onclick Event Handlers -->
+    var orc = document.getElementById("Orc");
+    orc.onclick = function(){
+        if (orc.className != "gray") {
+            createRow("Orc",0);
+        }
+    }
+    var boss = document.getElementById("Boss");
+    boss.onclick = function(){
+        if (boss.className != "gray") {
+            createRow("Boss",1);
+        }
+    }
+    var shaman = document.getElementById("Shaman");
+    shaman.onclick = function(){
+        if (shaman.className != "gray") {
+            createRow("Shaman",2);
+        }
+    }
+    var bigun = document.getElementById("BigUn");
+    bigun.onclick = function(){
+        if (bigun.className != "gray") {
+            createRow("BigUn",3);
+        }
+    }
+    var goblin = document.getElementById("Goblin");
+    goblin.onclick = function(){
+        if (goblin.className != "gray") {
+            createRow("Goblin",4);
+        }
+    }
+    var squig = document.getElementById("Squig");
+    squig.onclick = function(){
+        if(squig.className != "gray"){
+            createRow("Squig",5);
+        }
+    }
+    var troll = document.getElementById("Troll");
+    troll.onclick = function(){
+        if (troll.className != "gray") {
+            createRow("Troll",6);
+        }
+    }
+</script>
+</body>
+</html>
